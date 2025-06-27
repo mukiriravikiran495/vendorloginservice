@@ -1,6 +1,7 @@
 package com.vendorloginservice.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,7 +27,24 @@ public class VendorCredentials implements Serializable{
 	private String email;
 	private String otp;
 	private String password;
+	private LocalDateTime createdAt = LocalDateTime.now();
+    private String createdBy;
 
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public String getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
 	public long getVendorId() {
 		return vendorId;
