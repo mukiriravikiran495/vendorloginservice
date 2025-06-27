@@ -8,20 +8,24 @@ import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vendorloginservice.constants.AppConstants;
 import com.vendorloginservice.domain.SendOTPRequest;
 import com.vendorloginservice.domain.SendOTPResponse;
+import com.vendorloginservice.domain.VendorDTO;
 import com.vendorloginservice.domain.VendorDetailsDTO;
+import com.vendorloginservice.domain.VendorResponse;
+import com.vendorloginservice.entity.Vendor;
 import com.vendorloginservice.entity.VendorCredentials;
-import com.vendorloginservice.entity.VendorDetails;
 import com.vendorloginservice.exceptions.InvalidRequestException;
 import com.vendorloginservice.exceptions.StatusHandler;
 import com.vendorloginservice.mapper.VendorMapper;
-import com.vendorloginservice.repository.VendorDetailsRepository;
 import com.vendorloginservice.repository.VendorLoginRepository;
+import com.vendorloginservice.repository.VendorRepository;
+import com.vendorloginservice.utils.VendorUtils;
 
 @Service("VendorLoginService")
 public class VendorLoginServiceImpl implements VendorLoginService{
@@ -29,14 +33,17 @@ public class VendorLoginServiceImpl implements VendorLoginService{
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 	
 	private final VendorLoginRepository vendorLoginRepository;
-	private final VendorDetailsRepository vendorDetailsRepository;
+	private final VendorRepository vendorRepository;
 	private final VendorMapper mapper;
+	private final VendorUtils vendorUtils;
 	
-	public VendorLoginServiceImpl(VendorLoginRepository vendorLoginRepository, VendorDetailsRepository vendorDetailsRepository,
-			VendorMapper mapper) {
+	@Autowired
+	public VendorLoginServiceImpl(VendorLoginRepository vendorLoginRepository, VendorRepository vendorRepository,
+			VendorMapper mapper, VendorUtils vendorUtils) {
 		this.vendorLoginRepository = vendorLoginRepository;
-		this.vendorDetailsRepository = vendorDetailsRepository;
+		this.vendorRepository = vendorRepository;
 		this.mapper = mapper;
+		this.vendorUtils = vendorUtils;
 	}
 
 	@Override
@@ -60,7 +67,7 @@ public class VendorLoginServiceImpl implements VendorLoginService{
 			vendorLoginRepository.save(vendor);
 			
 			sendOTPResponse.setVendorId(optional.get().getVendorId());
-			sendOTPResponse.setVendor_name(optional.get().getVendor_name());
+			sendOTPResponse.setvFirstname(optional.get().getVendor_name());
 			sendOTPResponse.setEmail(optional.get().getEmail());
 			sendOTPResponse.setMessage(AppConstants.ACCOUNT_ALREADY_EXISTS);
 		}
@@ -99,27 +106,89 @@ public class VendorLoginServiceImpl implements VendorLoginService{
 			}
 			
 			if(vendorCredentials.get().getOtp().equals(sendOTPRequest.getOtp())) {
-				
-				VendorDetails vendorDetails = new VendorDetails();
-				vendorDetails.setVendorId(vendorCredentials.get().getVendorId());
-				vendorDetails.setV_firstName(vendorCredentials.get().getVendor_name());
-				vendorDetails.setV_mobile(vendorCredentials.get().getMobile());
-				vendorDetails.setV_email(vendorCredentials.get().getEmail());
-				vendorDetailsRepository.save(vendorDetails);
-				
-				sendOTPResponse.setVendorId(vendorCredentials.get().getVendorId());
-				sendOTPResponse.setVendor_name(vendorCredentials.get().getVendor_name());
-				sendOTPResponse.setMobile(vendorCredentials.get().getMobile());
-				sendOTPResponse.setOtp(sendOTPRequest.getOtp());
-				sendOTPResponse.setEmail(vendorCredentials.get().getEmail());
-				sendOTPResponse.setMessage(AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
-				statusHandler.setStatusCode("200");
-				statusHandler.setMessage(AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
-				sendOTPResponse.setStatusHandler(statusHandler);
-				logger.info("END : Verify OTP Request Service : "+AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
-				
-				
+				if(sendOTPRequest.getMessage().equals(AppConstants.ACCOUNT_ALREADY_EXISTS)) {
+					sendOTPResponse.setVendorId(vendorCredentials.get().getVendorId());
+					sendOTPResponse.setvFirstname(vendorCredentials.get().getVendor_name());
+					sendOTPResponse.setMobile(vendorCredentials.get().getMobile());
+					sendOTPResponse.setOtp(sendOTPRequest.getOtp());
+					sendOTPResponse.setEmail(vendorCredentials.get().getEmail());
+					sendOTPResponse.setMessage(AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
+					statusHandler.setStatusCode("200");
+					statusHandler.setMessage(AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
+					sendOTPResponse.setStatusHandler(statusHandler);
+					logger.info("END : Verify OTP Request Service : "+AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
+				}else {
+					VendorDTO vendorDTO = new VendorDTO();
+					vendorDTO.setVendorId(vendorCredentials.get().getVendorId());
+					vendorDTO.setVfirstname(vendorCredentials.get().getVendor_name());
+					vendorDTO.setvMobile(vendorCredentials.get().getMobile());
+					vendorDTO.setvEmail(vendorCredentials.get().getEmail());
+					vendorDTO.setBasePricePerKM(0);
+					vendorDTO.setEstimatedPrice(0);
+					vendorDTO.setPricePerKG(0);
+					vendorDTO.setAvgDeliveryTimeInDays(0);
+					VendorResponse vendorResponse = vendorUtils.createVendor(vendorDTO);
+					
+					sendOTPResponse.setVendorId(vendorResponse.getVendorDTO().getVendorId());
+					sendOTPResponse.setvFirstname(vendorResponse.getVendorDTO().getVfirstname());
+					sendOTPResponse.setMobile(vendorResponse.getVendorDTO().getvMobile());
+					sendOTPResponse.setOtp(sendOTPRequest.getOtp());
+					sendOTPResponse.setEmail(vendorResponse.getVendorDTO().getvEmail());
+					sendOTPResponse.setMessage(AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
+					statusHandler.setStatusCode("200");
+					statusHandler.setMessage(AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
+					sendOTPResponse.setStatusHandler(statusHandler);
+					
+					
+				}
 			}
+			
+//			if(vendorCredentials.get().getOtp().equals(sendOTPRequest.getOtp())  && null == sendOTPRequest.getVendorId()) {
+//				
+//				Vendor vendor = new Vendor();
+//				vendor.setVendorId(vendorCredentials.get().getVendorId());
+//				vendor.setVfirstname(vendorCredentials.get().getVendor_name());
+//				vendor.setvMobile(vendorCredentials.get().getMobile());
+//				vendor.setvEmail(vendorCredentials.get().getEmail());
+//				vendor.setBasePricePerKM(0);
+//				vendor.setEstimatedPrice(0);
+//				vendor.setPricePerKG(0);
+//				vendor.setAvgDeliveryTimeInDays(0);
+//				VendorDTO vendorDTO = vendorUtils.createVendor(vendor);
+////				vendorRepository.save(vendor);
+//				
+//				sendOTPResponse.setVendorId(vendorCredentials.get().getVendorId());
+//				sendOTPResponse.setvFirstname(vendorCredentials.get().getVendor_name());
+//				sendOTPResponse.setMobile(vendorCredentials.get().getMobile());
+//				sendOTPResponse.setOtp(sendOTPRequest.getOtp());
+//				sendOTPResponse.setEmail(vendorCredentials.get().getEmail());
+//				sendOTPResponse.setMessage(AppConstants.VENDOR_CREATED_SUCCESSFULLY);
+//				statusHandler.setStatusCode("200");
+//				statusHandler.setMessage(AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
+//				sendOTPResponse.setStatusHandler(statusHandler);
+//				logger.info("END : Verify OTP Request Service : "+AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
+//				
+//				
+//			}else {
+//				VendorResponse vendorDetails = vendorUtils.getVendor(sendOTPRequest.getVendorId());
+//				
+//				System.out.println(vendorDetails.getVendorDTO());
+//				if( null == vendorDetails.getVendorDTO().getVendorId()) {
+//					throw new RuntimeException(AppConstants.VENDORID_DOES_NOT_EXISTS);
+//				}
+//				
+//				VendorDTO vendorDTO = vendorDetails.getVendorDTO();
+//				sendOTPResponse.setVendorId(vendorDTO.getVendorId());
+//				sendOTPResponse.setvFirstname(vendorDTO.getVfirstname());
+//				sendOTPResponse.setvLastname(vendorDTO.getvLastname());
+//				sendOTPResponse.setMobile(vendorDTO.getvMobile());
+//				sendOTPResponse.setOtp(sendOTPRequest.getOtp());
+//				sendOTPResponse.setEmail(vendorDTO.getvEmail());
+//				sendOTPResponse.setMessage(AppConstants.VENDOR_ALREADY_EXISTS);
+//				statusHandler.setStatusCode("200");
+//				statusHandler.setMessage(AppConstants.OTP_VERIFICATION_IS_SUCCESSFULL);
+//				sendOTPResponse.setStatusHandler(statusHandler);
+//			}
 		}catch(InvalidRequestException ex) {
 			statusHandler.setErrorCode("400");
 			statusHandler.setErrorMessage(ex.getMessage());
@@ -152,8 +221,8 @@ public class VendorLoginServiceImpl implements VendorLoginService{
 	@Override
 	public List<VendorDetailsDTO> getdetails() {
 		
-		List<VendorDetails> list =  vendorDetailsRepository.findAll();
-		return mapper.toDtoList(list);
+		
+		return null;
 	}
 	
 }

@@ -5,22 +5,34 @@ import java.io.Serializable;
 public class SendOTPRequest implements Serializable{
 	
 	private static final long serialVersionUID = -7018178304185904643L;
-	private long vendorId;
+	private Long vendorId;
 	private String vendor_name;
 	private String mobile;
 	private String email;
 	private String otp;
+	private String message;
 //	private StatusHandler statusHandler;
 	
 	public String getVendor_name() {
 		return vendor_name;
 	}
-	public long getVendorId() {
+	
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Long getVendorId() {
 		return vendorId;
 	}
-	public void setVendorId(long vendorId) {
+
+	public void setVendorId(Long vendorId) {
 		this.vendorId = vendorId;
 	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}

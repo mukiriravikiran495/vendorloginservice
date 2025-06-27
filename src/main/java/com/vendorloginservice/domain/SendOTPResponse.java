@@ -4,8 +4,9 @@ import com.vendorloginservice.exceptions.StatusHandler;
 
 public class SendOTPResponse {
 
-	private long vendorId;
-	private String vendor_name;
+	private Long vendorId;
+	private String vFirstname;
+	private String vLastname;
 	private String mobile;
 	private String email;
 	private String otp;
@@ -20,17 +21,25 @@ public class SendOTPResponse {
 		this.token = token;
 	}
 	
-	public long getVendorId() {
+	
+	public Long getVendorId() {
 		return vendorId;
 	}
-	public void setVendorId(long vendorId) {
+	public void setVendorId(Long vendorId) {
 		this.vendorId = vendorId;
 	}
-	public String getVendor_name() {
-		return vendor_name;
+	
+	public String getvFirstname() {
+		return vFirstname;
 	}
-	public void setVendor_name(String vendor_name) {
-		this.vendor_name = vendor_name;
+	public void setvFirstname(String vFirstname) {
+		this.vFirstname = vFirstname;
+	}
+	public String getvLastname() {
+		return vLastname;
+	}
+	public void setvLastname(String vLastname) {
+		this.vLastname = vLastname;
 	}
 	public String getMobile() {
 		return mobile;
@@ -66,24 +75,6 @@ public class SendOTPResponse {
 	
 	public SendOTPResponse() {
 		super();
-	}
-	public SendOTPResponse(long vendorId, String vendor_name, String mobile, String email, String otp, String message,
-			String token, StatusHandler statusHandler) {
-		super();
-		this.vendorId = vendorId;
-		this.vendor_name = vendor_name;
-		this.mobile = mobile;
-		this.email = email;
-		this.otp = otp;
-		this.message = message;
-		this.token = token;
-		this.statusHandler = statusHandler;
-	}
-	@Override
-	public String toString() {
-		return "SendOTPResponse [vendorId=" + vendorId + ", vendor_name=" + vendor_name + ", mobile=" + mobile
-				+ ", email=" + email + ", otp=" + otp + ", message=" + message + ", token=" + token + ", statusHandler="
-				+ statusHandler + "]";
 	}
 	
 	

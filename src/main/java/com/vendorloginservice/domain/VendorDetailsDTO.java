@@ -1,8 +1,5 @@
 package com.vendorloginservice.domain;
 
-import java.util.List;
-
-
 public class VendorDetailsDTO {
 
 	private String vendorId;

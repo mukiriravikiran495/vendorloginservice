@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,7 +17,8 @@ public class VendorCredentials implements Serializable{
 
 	private static final long serialVersionUID = -3172379865527131977L;
 	@Id
-	@GeneratedValue( strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vendorlogin_seq_gen")
+	@SequenceGenerator(name = "vendorlogin_seq_gen", sequenceName = "VENDORLOGIN_SEQ", allocationSize = 1)
 	private long vendorId;
 	private String vendor_name;
 	@Id
