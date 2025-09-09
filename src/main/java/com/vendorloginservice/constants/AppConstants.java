@@ -14,5 +14,14 @@ public class AppConstants {
 	public static final String VENDORID_DOES_NOT_EXISTS = "VENDORID_DOES_NOT_EXISTS";
 	public static final String VENDOR_ALREADY_EXISTS = "VENDOR_ALREADY_EXISTS";
 	public static final String VENDOR_CREATED_SUCCESSFULLY = "VENDOR_CREATED_SUCCESSFULLY";
+	public static final String ENTER_10_DIGIT_MOBILENUMBER = "ENTER_10_DIGIT_MOBILENUMBER";
+	public static final String INCORRECT_OTP = "INCORRECT_OTP";
+	public static final String PLEASE_SEND_OTP_AGAIN = "PLEASE_SEND_OTP_AGAIN";
+	public static final String OTPSENT = "OTPSENT";
+	public static final String SUCCESS = "SUCCESS";
+	public static final String FAILED = "FAILED";
+	public static final String ENTER_VALID_OTP = "ENTER_VALID_OTP";
+	public static final String INVALID_OTP = "INVALID_OTP";
+	public static final String VENDOR_DETAILS_NOT_SAVED = "VENDOR_DETAILS_NOT_SAVED";
 
 }

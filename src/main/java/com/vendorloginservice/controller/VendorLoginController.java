@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +21,10 @@ import com.vendorloginservice.domain.SendOTPRequest;
 import com.vendorloginservice.domain.SendOTPResponse;
 import com.vendorloginservice.domain.TokenID;
 import com.vendorloginservice.domain.VendorDetailsDTO;
-import com.vendorloginservice.entity.VendorCredentials;
+import com.vendorloginservice.domain.VerifyOTPRequest;
+import com.vendorloginservice.domain.VerifyOTPResponse;
+import com.vendorloginservice.entity.VendorAuth;
+import com.vendorloginservice.exceptions.InvalidMobileNumberException;
 import com.vendorloginservice.exceptions.InvalidRequestException;
 import com.vendorloginservice.exceptions.StatusHandler;
 import com.vendorloginservice.service.VendorLoginService;
@@ -42,7 +46,7 @@ public class VendorLoginController {
 	}
 	
 	@GetMapping( value = "/getvendors")
-	public List<VendorCredentials> getall(){
+	public List<VendorAuth> getall(){
 		return service.getall();
 	}
 	
@@ -64,72 +68,72 @@ public class VendorLoginController {
 	}
 	
 	@PostMapping( value = "/sendotp")
-	public ResponseEntity<SendOTPResponse> sendOTP(@RequestBody SendOTPRequest sendOTPRequest){
+	public ResponseEntity<SendOTPResponse> sendOTP(@RequestBody SendOTPRequest sendOTPRequest, @RequestHeader("APPID") String appId){
 		logger.info("START : SendOTP Request Controller : "+sendOTPRequest);
 		StatusHandler statusHandler = new StatusHandler();
 		SendOTPResponse sendOTPResponse = new SendOTPResponse();
 		try {
 			if(null == sendOTPRequest.getMobile() || sendOTPRequest.getMobile().isEmpty()) {
-				throw new InvalidRequestException(AppConstants.MOBILENUMBER_IS_REQUIRED);
+				throw new InvalidMobileNumberException(AppConstants.MOBILENUMBER_IS_REQUIRED);
 			}
 			if(sendOTPRequest.getMobile().matches("\\{d}")) {
-				throw new InvalidRequestException(AppConstants.INVALID_MOBILENUMBER);
+				throw new InvalidRequestException(AppConstants.ENTER_10_DIGIT_MOBILENUMBER);
 			}
-			sendOTPResponse = service.sendOTP(sendOTPRequest, sendOTPResponse, statusHandler);
+			sendOTPResponse = service.sendOTP(sendOTPRequest, sendOTPResponse, appId, statusHandler);
 			ResponseEntity<SendOTPResponse> response = new ResponseEntity<>(sendOTPResponse, HttpStatus.OK);
 			
 			logger.info("END : Send OTP Controller : "+sendOTPResponse);
 			logger.warn("END : Send OTP Controller : "+sendOTPResponse);
 			return response;
 		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(ex.getMessage());
+			statusHandler.setStatusCode("400");
+			statusHandler.setMessage(ex.getMessage());
 			sendOTPResponse.setStatusHandler(statusHandler);
 			return new ResponseEntity<>(sendOTPResponse, HttpStatus.BAD_REQUEST);
 		}catch(Exception ex) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorMessage(ex.getMessage());
+			statusHandler.setStatusCode("500");
+			statusHandler.setMessage(ex.getMessage());
 			sendOTPResponse.setStatusHandler(statusHandler);
 			return new ResponseEntity<>(sendOTPResponse,HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	@PostMapping( value = "/verifyotp")
-	public ResponseEntity<SendOTPResponse> verifyOTP(@RequestBody SendOTPRequest sendOTPRequest){
-		logger.info("START : Verify OTP Request : "+sendOTPRequest);
+	public ResponseEntity<VerifyOTPResponse> verifyOTP(@RequestBody VerifyOTPRequest verifyOTPRequest, 
+														@RequestHeader("Authorization") String accessToken,
+														@RequestHeader("APPID") String appId){
+		logger.info("START : Verify OTP Request : "+verifyOTPRequest);
 		StatusHandler statusHandler = new StatusHandler();
-		SendOTPResponse sendOTPResponse = new SendOTPResponse();
+		VerifyOTPResponse verifyOTPResponse = new VerifyOTPResponse();
+		String token = accessToken.replace("Bearer ", "");
 		try {
-			if( null == sendOTPRequest.getMobile() || sendOTPRequest.getMobile().isEmpty()) {
+			if( null == verifyOTPRequest.getMobile() || verifyOTPRequest.getMobile().isEmpty()) {
 				throw new InvalidRequestException(AppConstants.OTP_IS_REQUIRED);
 			}
-			if( sendOTPRequest.getMobile().matches("\\{d}")) {
+			if( verifyOTPRequest.getMobile().matches("\\{d}")) {
 				throw new InvalidRequestException(AppConstants.INVALID_REQUEST);
 			}
-			
-			String token = jwtUtil.generateToken(sendOTPRequest.getMobile());
-			sendOTPResponse.setToken(token);
-			
-			sendOTPResponse = service.verifyOTP(sendOTPRequest, sendOTPResponse, statusHandler);
-			ResponseEntity<SendOTPResponse> response = new ResponseEntity<>(sendOTPResponse, HttpStatus.OK);
-			logger.info("END : Verify OTP Request : "+sendOTPResponse);
+
+			verifyOTPResponse = service.verifyOTP(verifyOTPRequest, token, appId, verifyOTPResponse, statusHandler);
+			ResponseEntity<VerifyOTPResponse> response = new ResponseEntity<>(verifyOTPResponse, HttpStatus.OK);
+			logger.info("END : Verify OTP Request : "+verifyOTPResponse);
 			return response;
 		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(ex.getMessage());
-			sendOTPResponse.setStatusHandler(statusHandler);
-			return new ResponseEntity<>(sendOTPResponse, HttpStatus.BAD_REQUEST);
+			statusHandler.setStatusCode("400");
+			statusHandler.setMessage(ex.getMessage());
+			verifyOTPResponse.setStatusHandler(statusHandler);
+			return new ResponseEntity<>(verifyOTPResponse, HttpStatus.BAD_REQUEST);
 		}catch(Exception ex) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorMessage(AppConstants.INTERNAL_SERVER_ERROR);
-			sendOTPResponse.setStatusHandler(statusHandler);
-			return new ResponseEntity<>(sendOTPResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+			statusHandler.setStatusCode("500");
+			statusHandler.setMessage(AppConstants.INTERNAL_SERVER_ERROR);
+			verifyOTPResponse.setStatusHandler(statusHandler);
+			return new ResponseEntity<>(verifyOTPResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 	}
 	
 	@PostMapping( value = "/resendotp")
-	public ResponseEntity<SendOTPResponse> resendotp(@RequestBody SendOTPRequest sendOTPRequest){
+	public ResponseEntity<SendOTPResponse> resendotp(@RequestBody SendOTPRequest sendOTPRequest, @RequestHeader("APPID") String appId){
 		logger.info("START : Resend OTP Controller "+sendOTPRequest);
 		StatusHandler statusHandler = new StatusHandler();
 		SendOTPResponse sendOTPResponse = new SendOTPResponse();
@@ -140,20 +144,20 @@ public class VendorLoginController {
 			if(sendOTPRequest.getMobile().matches("\\{d}")) {
 				throw new InvalidRequestException(AppConstants.INVALID_MOBILENUMBER);
 			}
-			sendOTPResponse = service.sendOTP(sendOTPRequest, sendOTPResponse, statusHandler);
+			sendOTPResponse = service.sendOTP(sendOTPRequest, sendOTPResponse, appId, statusHandler);
 			ResponseEntity<SendOTPResponse> response = new ResponseEntity<>(sendOTPResponse, HttpStatus.OK);
 			
 			logger.info("END : Resend OTP Controller : "+sendOTPResponse);
 			logger.warn("END : Resend OTP Controller : "+sendOTPResponse);
 			return response;
 		}catch(InvalidRequestException ex) {
-			statusHandler.setErrorCode("400");
-			statusHandler.setErrorMessage(ex.getMessage());
+			statusHandler.setStatusCode("400");
+			statusHandler.setMessage(ex.getMessage());
 			sendOTPResponse.setStatusHandler(statusHandler);
 			return new ResponseEntity<>(sendOTPResponse, HttpStatus.BAD_REQUEST);
 		}catch(Exception ex) {
-			statusHandler.setErrorCode("500");
-			statusHandler.setErrorMessage(ex.getMessage());
+			statusHandler.setStatusCode("500");
+			statusHandler.setMessage(ex.getMessage());
 			sendOTPResponse.setStatusHandler(statusHandler);
 			return new ResponseEntity<>(sendOTPResponse,HttpStatus.INTERNAL_SERVER_ERROR);
 		}

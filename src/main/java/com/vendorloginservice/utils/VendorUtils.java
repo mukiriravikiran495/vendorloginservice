@@ -2,7 +2,6 @@ package com.vendorloginservice.utils;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-
 import com.vendorloginservice.domain.TokenID;
-import com.vendorloginservice.domain.VendorDTO;
+import com.vendorloginservice.domain.VendorDetailsDTO;
 import com.vendorloginservice.domain.VendorResponse;
-import com.vendorloginservice.entity.Vendor;
 
 @Component
 public class VendorUtils {
@@ -39,21 +36,19 @@ public class VendorUtils {
 	public VendorUtils(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
-	public VendorResponse createVendor(VendorDTO vendorDTO) {
-		logger.info("Start : create vendor utils : "+vendorDTO);
+	public VendorResponse createVendor(VendorDetailsDTO vendorDetailsDTO) {
+		logger.info("Start : create vendor utils : "+vendorDetailsDTO);
 		
 		String url = vendorServiceUrl+"/vendor/create";
 		
-		TokenID token = getToken();
-		
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer "+token.getToken());
-		System.out.println("token : "+token.getToken());
+		headers.set("Authorization", "Bearer "+vendorDetailsDTO.getAccessToken());
+		System.out.println("token : "+vendorDetailsDTO.getAccessToken());
 		System.out.println(" URL : "+url);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<VendorDTO> entity = new HttpEntity<>(vendorDTO, headers);
+        HttpEntity<VendorDetailsDTO> entity = new HttpEntity<>(vendorDetailsDTO, headers);
 
         try {
             ResponseEntity<VendorResponse> response = restTemplate.exchange(

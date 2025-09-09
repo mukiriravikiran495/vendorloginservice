@@ -16,9 +16,17 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired private JwtUtil jwtUtil;
-    
-    private static final String DUMMY_TOKEN = "DUMMY-TOKEN";
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        // only these APIs are public
+        return path.startsWith("/v1/api/vendor/sendotp")
+            || path.startsWith("/v1/api/vendor/auth/token")
+            || path.startsWith("/v1/api/vendor/resendotp");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -29,16 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String jwt = authHeader.substring(7);
-            
-         // ✅ Bypass authentication for dummy token
-            if (DUMMY_TOKEN.equals(jwt)) {
-                UsernamePasswordAuthenticationToken dummyAuth =
-                        new UsernamePasswordAuthenticationToken("testuser", null, List.of());
-                SecurityContextHolder.getContext().setAuthentication(dummyAuth);
-                filterChain.doFilter(request, response);
-                return;
-            }
-            
+
             String username = jwtUtil.extractUsername(jwt);
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -49,6 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

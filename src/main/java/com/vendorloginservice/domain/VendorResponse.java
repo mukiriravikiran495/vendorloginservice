@@ -4,13 +4,12 @@ import com.vendorloginservice.exceptions.StatusHandler;
 
 public class VendorResponse {
 
-	private VendorDTO vendorDTO;
-	private StatusHandler statusHandler;
-	public VendorDTO getVendorDTO() {
-		return vendorDTO;
+	private VendorDetailsDTO vendorDetailsDTO;
+	public VendorDetailsDTO getVendorDetailsDTO() {
+		return vendorDetailsDTO;
 	}
-	public void setVendorDTO(VendorDTO vendorDTO) {
-		this.vendorDTO = vendorDTO;
+	public void setVendorDetailsDTO(VendorDetailsDTO vendorDetailsDTO) {
+		this.vendorDetailsDTO = vendorDetailsDTO;
 	}
 	public StatusHandler getStatusHandler() {
 		return statusHandler;
@@ -18,5 +17,6 @@ public class VendorResponse {
 	public void setStatusHandler(StatusHandler statusHandler) {
 		this.statusHandler = statusHandler;
 	}
+	private StatusHandler statusHandler;
 	
 }

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: vendorloginservice
+
+  datasource:
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1521/orclpdb
+    username: VENDOR_LOGIN
+    password: password
+
+  jpa:
+    hibernate:
+      ddl-auto: none   # or none/validate/create depending on your use case
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.OracleDialect
+
+server:
+  port: 8085
+
+vendor:
+  service:
+    url: http://localhost:8086/v1/api/vendor
+
+transaction:
+  service:
+    url: http://localhost:8087/v1/api/transaction/log
+
+
+

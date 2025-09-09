@@ -8,10 +8,10 @@
 		<version>3.2.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.customerloginservice</groupId>
-	<artifactId>customerloginservice</artifactId>
+	<groupId>com.vendorloginservice</groupId>
+	<artifactId>vendorloginservice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>customerloginservice</name>
+	<name>vendorloginservice</name>
 	<description>Spring Boot</description>
 	
 	<properties>

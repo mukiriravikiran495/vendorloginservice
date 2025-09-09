@@ -1,15 +1,22 @@
 package com.vendorloginservice.exceptions;
 
-public class StatusHandler {
+import java.io.Serial;
+import java.io.Serializable;
 
-	private String statusCode;
-	private String message;
-	private String errorCode;
-	private String errorMessage;
-	public String getStatusCode() {
-		return statusCode;
+public class StatusHandler implements Serializable{
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+	String message;
+	String error;
+	String statusCode;
+	
+	public StatusHandler() {
+		super();
 	}
-	public void setStatusCode(String statusCode) {
+	public StatusHandler(String message, String statusCode) {
+		super();
+		this.message = message;
 		this.statusCode = statusCode;
 	}
 	public String getMessage() {
@@ -18,31 +25,17 @@ public class StatusHandler {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public String getErrorCode() {
-		return errorCode;
+	public String getError() {
+		return error;
 	}
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
+	public void setError(String error) {
+		this.error = error;
 	}
-	public String getErrorMessage() {
-		return errorMessage;
+	public String getStatusCode() {
+		return statusCode;
 	}
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
-	}
-	@Override
-	public String toString() {
-		return "StatusHandler [statusCode=" + statusCode + ", message=" + message + ", errorCode=" + errorCode
-				+ ", errorMessage=" + errorMessage + "]";
-	}
-	public StatusHandler(String statusCode, String message, String errorCode, String errorMessage) {
-		super();
+	public void setStatusCode(String statusCode) {
 		this.statusCode = statusCode;
-		this.message = message;
-		this.errorCode = errorCode;
-		this.errorMessage = errorMessage;
 	}
-	public StatusHandler() {
-		
-	}
+	
 }

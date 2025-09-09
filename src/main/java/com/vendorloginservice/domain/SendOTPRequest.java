@@ -4,25 +4,19 @@ import java.io.Serializable;
 
 public class SendOTPRequest implements Serializable{
 	
-	private static final long serialVersionUID = -7018178304185904643L;
-	private Long vendorId;
-	private String vendor_name;
 	private String mobile;
-	private String email;
 	private String otp;
+	private String email;
 	private String message;
-//	private StatusHandler statusHandler;
+	private long vendorId;
+	private String companyName;
+	private String ownerName;
+	private String deviceId;
+	private String deviceName;
+	private String appId;
 	
-	public String getVendor_name() {
-		return vendor_name;
-	}
-	
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
+	public SendOTPRequest() {
+		
 	}
 
 	public Long getVendorId() {
@@ -33,45 +27,102 @@ public class SendOTPRequest implements Serializable{
 		this.vendorId = vendorId;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public String getCompanyName() {
+		return companyName;
 	}
-	public void setVendor_name(String vendor_name) {
-		this.vendor_name = vendor_name;
+
+	public void setCompanyName(String companyName) {
+		this.companyName = companyName;
 	}
+
+	public String getOwnerName() {
+		return ownerName;
+	}
+
+	public void setOwnerName(String ownerName) {
+		this.ownerName = ownerName;
+	}
+
 	public String getMobile() {
 		return mobile;
 	}
+
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public void setVendorId(long vendorId) {
+		this.vendorId = vendorId;
+	}
+
 	public String getOtp() {
 		return otp;
 	}
+
 	public void setOtp(String otp) {
 		this.otp = otp;
 	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	public String getDeviceName() {
+		return deviceName;
+	}
+
+	public void setDeviceName(String deviceName) {
+		this.deviceName = deviceName;
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
 	
-	public SendOTPRequest(long vendorId, String vendor_name, String mobile, String email, String otp) {
+	public SendOTPRequest(Long vendorId, String companyName, String ownerName, String mobile, String email, String otp,
+			String message, String deviceId, String deviceName, String appId) {
 		super();
 		this.vendorId = vendorId;
-		this.vendor_name = vendor_name;
+		this.companyName = companyName;
+		this.ownerName = ownerName;
 		this.mobile = mobile;
 		this.email = email;
 		this.otp = otp;
+		this.message = message;
+		this.deviceId = deviceId;
+		this.deviceName = deviceName;
+		this.appId = appId;
 	}
+
 	@Override
 	public String toString() {
-		return "SendOTPRequest [vendorId=" + vendorId + ", vendor_name=" + vendor_name + ", mobile=" + mobile
-				+ ", email=" + email + ", otp=" + otp + "]";
+		return "SendOTPRequest [vendorId=" + vendorId + ", companyName=" + companyName + ", ownerName=" + ownerName
+				+ ", mobile=" + mobile + ", email=" + email + ", otp=" + otp + ", message=" + message + ", deviceId="
+				+ deviceId + ", deviceName=" + deviceName + ", appId=" + appId + "]";
 	}
-	public SendOTPRequest() {
-		
-	}
+	
 }
