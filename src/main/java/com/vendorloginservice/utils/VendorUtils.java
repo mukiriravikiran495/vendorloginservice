@@ -90,39 +90,39 @@ public class VendorUtils {
 		logger.info("End : get token customer-service : ");
 		return response.getBody();
 	}
-	public VendorResponse getVendor(Long vendorId) {
-		logger.info("Start : get vendor details by custId : "+vendorId);
-		String url = vendorServiceUrl+"/get/"+vendorId;
-		
-		TokenID token = getToken();
-		
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Bearer "+token.getToken());
-		System.out.println("token : "+token.getToken());
-		System.out.println(" URL : "+url);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<Void> entity = new HttpEntity<>(headers);
-
-        try {
-            ResponseEntity<VendorResponse> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                entity,
-                VendorResponse.class
-            );
-            logger.info("Response: " + response.getBody());
-            return response.getBody();
-        } catch (HttpClientErrorException | HttpServerErrorException ex) {
-            logger.error("HTTP Error: " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
-            System.out.println(ex.getMessage());
-            throw ex;
-        } catch (Exception e) {
-            logger.error("Request failed: ", e);
-            throw e;
-        }
-	}
+//	public VendorResponse getVendor(Long vendorId) {
+//		logger.info("Start : get vendor details by custId : "+vendorId);
+//		String url = vendorServiceUrl+"/get/"+vendorId;
+//		
+//		TokenID token = getToken();
+//		
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.set("Authorization", "Bearer "+token.getToken());
+//		System.out.println("token : "+token.getToken());
+//		System.out.println(" URL : "+url);
+//        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//        HttpEntity<Void> entity = new HttpEntity<>(headers);
+//
+//        try {
+//            ResponseEntity<VendorResponse> response = restTemplate.exchange(
+//                url,
+//                HttpMethod.GET,
+//                entity,
+//                VendorResponse.class
+//            );
+//            logger.info("Response: " + response.getBody());
+//            return response.getBody();
+//        } catch (HttpClientErrorException | HttpServerErrorException ex) {
+//            logger.error("HTTP Error: " + ex.getStatusCode() + " - " + ex.getResponseBodyAsString());
+//            System.out.println(ex.getMessage());
+//            throw ex;
+//        } catch (Exception e) {
+//            logger.error("Request failed: ", e);
+//            throw e;
+//        }
+//	}
 	
 	
 }

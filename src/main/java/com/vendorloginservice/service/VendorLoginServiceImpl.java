@@ -68,6 +68,20 @@ public class VendorLoginServiceImpl implements VendorLoginService{
 	}
 
 	@Override
+	public VendorTokens getVendorTokens(String accessToken){
+		VendorTokens vendorTokens = null;
+		try {
+			vendorTokens = vendorTokenRepository.findByAccessTokenAndIsActive(accessToken, "Y")
+			        .orElseThrow(() -> new InvalidRequestException("Invalid or inactive token"));
+		} catch (InvalidRequestException e) {
+			
+			e.printStackTrace();
+		}
+		System.out.println(vendorTokens);
+		return vendorTokens;
+	}
+	
+	@Override
 	@Transactional
 	public SendOTPResponse sendOTP(SendOTPRequest sendOTPRequest, SendOTPResponse sendOTPResponse, String appId,
 			StatusHandler statusHandler) {

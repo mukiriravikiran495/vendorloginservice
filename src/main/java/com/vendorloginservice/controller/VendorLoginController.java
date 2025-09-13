@@ -3,7 +3,6 @@ package com.vendorloginservice.controller;
 import java.lang.invoke.MethodHandles;
 import java.util.Date;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.vendorloginservice.constants.AppConstants;
 import com.vendorloginservice.domain.SendOTPRequest;
 import com.vendorloginservice.domain.SendOTPResponse;
@@ -24,6 +22,7 @@ import com.vendorloginservice.domain.VendorDetailsDTO;
 import com.vendorloginservice.domain.VerifyOTPRequest;
 import com.vendorloginservice.domain.VerifyOTPResponse;
 import com.vendorloginservice.entity.VendorAuth;
+import com.vendorloginservice.entity.VendorTokens;
 import com.vendorloginservice.exceptions.InvalidMobileNumberException;
 import com.vendorloginservice.exceptions.InvalidRequestException;
 import com.vendorloginservice.exceptions.StatusHandler;
@@ -56,15 +55,12 @@ public class VendorLoginController {
 	}
 	
 	@GetMapping( value = "/auth/token")
-	public ResponseEntity<TokenID> getToken() {
-		String token = jwtUtil.generateTokenId();
-		TokenID tokenId = new TokenID();
-		tokenId.setToken(token);
-		long timestamp = new Date().getTime();
-		tokenId.setExpires(timestamp);
-		tokenId.setStatus("200");
-		tokenId.setResult(AppConstants.TOKEN_GENERATED_SUCCESSFULLY);
-		return new ResponseEntity<>(tokenId, HttpStatus.OK);
+	public ResponseEntity<VendorTokens> validateAccessToken(@RequestHeader("Authorization") String authorization ) {
+		logger.info("Start: generate token controller..!!");
+		String accessToken = authorization.replace("Bearer ", "");
+		VendorTokens response = service.getVendorTokens(accessToken);
+		logger.info("End: generate token controller..!!");
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@PostMapping( value = "/sendotp")

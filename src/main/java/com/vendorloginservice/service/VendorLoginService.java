@@ -8,6 +8,7 @@ import com.vendorloginservice.domain.VendorDetailsDTO;
 import com.vendorloginservice.domain.VerifyOTPRequest;
 import com.vendorloginservice.domain.VerifyOTPResponse;
 import com.vendorloginservice.entity.VendorAuth;
+import com.vendorloginservice.entity.VendorTokens;
 import com.vendorloginservice.exceptions.StatusHandler;
 
 public interface VendorLoginService {
@@ -21,5 +22,7 @@ public interface VendorLoginService {
 	List<VendorAuth> getall();
 
 	List<VendorDetailsDTO> getdetails();
+
+	VendorTokens getVendorTokens(String accessToken);
 
 }
